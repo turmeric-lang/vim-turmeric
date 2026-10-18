@@ -135,32 +135,3 @@ hi EndOfBuffer      guifg=#FBF8F2 guibg=#FBF8F2
 hi Whitespace       guifg=#E3D9C8 guibg=NONE
 hi SpecialKey       guifg=#A39682 guibg=NONE
 hi IndentBlanklineChar guifg=#E3D9C8 guibg=NONE
-
-" ---- Direct mappings for the turmeric.vim syntax groups ----
-" (Mirror the Monaco token roles exactly; identical to turmeric-dark.)
-hi link turmericLineComment   Comment
-hi link turmericDocComment    SpecialComment
-hi link turmericBlockComment  Comment
-hi link turmericString        String
-hi link turmericStringEsc     SpecialChar
-hi link turmericBadEsc        Error
-hi link turmericCBlock        PreProc
-hi link turmericHex           Number
-hi link turmericBin           Number
-hi link turmericFloat         Float
-hi link turmericInt           Number
-hi link turmericBool          Boolean
-hi link turmericChar          Character
-hi link turmericNil           Constant
-hi link turmericKeyLit        Constant
-hi link turmericMeta          PreProc
-hi link turmericDefine        Define
-hi link turmericControl       Conditional
-hi link turmericType          Type
-hi link turmericEffect        Keyword
-hi link turmericExcept        Exception
-hi link turmericNeotericCall  Function
-hi link turmericDelim         Delimiter
-hi link turmericCurlyInfix    Special
-hi link turmericLangDir       PreProc
-hi link turmericLangName      Type

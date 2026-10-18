@@ -81,6 +81,27 @@ for [l, c, want, what] in [
   let got = synIDattr(synIDtrans(synID(l, c, 1)), 'name')
   echo (got ==# want ? 'ok  ' : 'BAD ') . what . ' want=' . want . ' got=' . got
 endfor
+" The colorschemes color the syntax through the standard groups it links to.
+" Resolve the actual GUI foreground, so a theme that stops coloring a token
+" fails here. Expected colors are the shared palette's (web/editor-palette.json
+" in turmeric-lang/turmeric).
+for [scheme, colors] in [
+      \\ ['turmeric-dark',  {'keyword': '#efa030', 'string': '#d9735a', 'number': '#a8c98a', 'comment': '#48433d', 'type': '#7ac4b8'}],
+      \\ ['turmeric-light', {'keyword': '#965500', 'string': '#ae3c26', 'number': '#456f20', 'comment': '#a39682', 'type': '#127065'}]]
+  execute 'colorscheme ' . scheme
+  edit! $SAMPLE
+  setfiletype turmeric
+  for [l, c, role, what] in [
+        \\ [4, 3,  'keyword', 'defn'],
+        \\ [8, 11, 'string',  'string'],
+        \\ [7, 10, 'number',  'float literal'],
+        \\ [3, 3,  'comment', ';; comment'],
+        \\ [5, 20, 'type',    'type annotation']]
+    let got = tolower(synIDattr(synIDtrans(synID(l, c, 1)), 'fg#', 'gui'))
+    let want = colors[role]
+    echo (got ==# want ? 'ok  ' : 'BAD ') . scheme . ' ' . what . ' want=' . want . ' got=' . got
+  endfor
+endfor
 redir END
 qall!
 VIM
@@ -102,6 +123,20 @@ VIM
         fi
     fi
     rm -f "$PROBE" "$OUT"
+fi
+
+# The colorschemes must not name a syntax group the syntax file no longer
+# defines: such a link does nothing, and it hides which groups are real.
+defined="$(grep -oE 'syn (match|region|keyword) +turmeric[A-Za-z]+' "$ROOT/syntax/turmeric.vim" | awk '{print $3}' | sort -u)"
+stale=""
+for g in $(grep -ohE 'turmeric[A-Z][A-Za-z]*' "$ROOT"/colors/*.vim | sort -u); do
+    printf '%s\n' "$defined" | grep -qx "$g" || stale="$stale $g"
+done
+if [ -n "$stale" ]; then
+    echo "FAIL colors: link syntax groups the syntax does not define:$stale"
+    fails=$((fails + 1))
+else
+    echo "ok   colors: every turmeric* group they name is defined"
 fi
 
 rm -rf "$(dirname "$SAMPLE")"
